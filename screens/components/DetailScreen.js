@@ -1,22 +1,40 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
-import styles from '../style/styles';
+import styles from '../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const NewsScreenApp = () => {
+const DetailScreen = ({route, navigation}) => {
 
     const [newsList, setNewsList] = useState([]);
 
+    let json = route.params.Json;
+    //get the associated currency
+    let coin = json['Meta Data']['2. Digital Currency Code']; 
+    //get all the dates
+    let dates = route.params.Dates;
+    //empty array to store price history
+    let priceHistory = [];
+
+    //get price history from the last 30 days
+    for(let i = 0; i < 29; i++){
+        try{
+            priceHistory.push([dates[i],json['Time Series (Digital Currency Daily)'][dates[i]]['4b. close (USD)']]);
+        }catch(error){
+            console.log("error loading json or dates data");
+        }
+    }
+
     const getNewsAPI = async () => 
     {
-
         // Link with real API key (Please use this sparringly. As the limit for this free API key is only 500 API calls per day! If you exceed the limit, you can always use the free demo link below to test)
-        'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&time_from=20220410T0130&limit=50&apikey=282FMJHWV610CAN8'
+        `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=CRYPTO:${coin}&time_from=20220410T0130&limit=6&apikey=282FMJHWV610CAN8`
 
         // Free demo API link. This is a free link and nly displays the free available data that doesn't require an API key:
         'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=COIN,CRYPTO:BTC,FOREX:USD&time_from=20220410T0130&limit=200&apikey=demo'
@@ -52,22 +70,19 @@ const NewsScreenApp = () => {
         }
     }
 
+    //initial render
     useEffect(() => { 
 
         getNewsAPI();
 
     }, [])
- 
 
     if(newsList.length > 0){
         return (
-
             <SafeAreaView style={styles.container}>
                 <ScrollView style={{height:"100%"}}>
                     <View>
-                        <View style = {styles.titleContainer}>
-                            <Text style={styles.titleText}>General Finance News</Text>
-                        </View>
+                        <View style = {styles.titleContainer}><Text style={styles.titleText}>Top Stories For {json["Meta Data"]["3. Digital Currency Name"]}</Text></View>
                         <View>
                             {newsList.map(
                                 (object, index) => {
@@ -94,6 +109,23 @@ const NewsScreenApp = () => {
                                 }
                             )}
                         </View>
+
+                        <View style = {styles.titleContainer}><Text style={styles.titleText}>Price History of last 30 days</Text></View>
+
+                        <View>
+                            {priceHistory.map(
+                                (item) => {
+                                    return(
+                                    <View key={item[0]}>
+                                            <View style={styles.cell} >
+                                                <Text><Text style={styles.boldText}>Date: </Text> {item[0]}</Text>
+                                                <Text><Text style={styles.boldText}>Price: </Text>USD {item[1]}</Text>
+                                            </View>
+                                    </View>
+                                    )
+                                }
+                            )}
+                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -103,15 +135,33 @@ const NewsScreenApp = () => {
         return(
         <SafeAreaView style={styles.container}>
             <ScrollView style={{height:"100%"}}>
+
                 <View style = {styles.titleContainer}><Text style={styles.titleText}>Top Stories</Text></View>
+                
                 <View style={styles.cell}>
                     <Text style={styles.boldText}>Please wait. News data loading.....</Text>
                 </View>
+
                 <View style = {styles.titleContainer}><Text style={styles.titleText}>Price History of last 30 days</Text></View>
+
+                <View>
+                    {priceHistory.map(
+                        (item) => {
+                            return(
+                            <View key={item[0]}>
+                                    <View style={styles.cell} >
+                                        <Text><Text style={styles.boldText}>Date: </Text> {item[0]}</Text>
+                                        <Text><Text style={styles.boldText}>Price: </Text>USD {item[1]}</Text>
+                                    </View>
+                            </View>
+                            )
+                        }
+                    )}
+                </View>
             </ScrollView>
         </SafeAreaView>
         )
     }
 }
 
-export default NewsScreenApp;
+export default DetailScreen;

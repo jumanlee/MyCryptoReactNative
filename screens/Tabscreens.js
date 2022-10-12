@@ -10,18 +10,6 @@ import HomeScreenApp from './Homescreen';
 import NewsScreenApp from './Newsscreen';
 import React from 'react';
 
-
-function NewsScreen(){
-  return(
-    <SafeAreaView>
-      <View>
-        <Text>News Screen!</Text>
-      </View>
-    </SafeAreaView>
-  )
-}
-
-
 const Tab = createBottomTabNavigator();
 
 const Tabscreens = () => {
