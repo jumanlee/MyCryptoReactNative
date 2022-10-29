@@ -1,6 +1,6 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal } from 'react-native';
 import styles from '../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
@@ -14,17 +14,19 @@ import {recommendAlgo, calculateMovement} from './algo';
 
 const ListScreen = ({navigation}) => {
 
+    //general app states
     const [name, setName] = useState('');
     const [mainList, setMainList] = useState([]);
     const [apiData, setApiData] = useState(null);
     const [lastRefreshed, setLastRefreshed] = useState(null);
-
+   
+    //component to save data 
     const setData = async () => {
         var user = name;
         await AsyncStorage.setItem(user, user);
     }
     
-    //retrieve data from AsyncStorage
+    //component to retrieve data from AsyncStorage
     const getData = async () => {
 
         try{
@@ -38,6 +40,7 @@ const ListScreen = ({navigation}) => {
         }
     }
 
+    //component to remove data from the list and async storage
     const removeData = async (currency) => {
         for(let i = mainList.length - 1; i >= 0; i--){
             if(mainList[i].Currency == currency){
@@ -49,11 +52,13 @@ const ListScreen = ({navigation}) => {
         }
     }
 
+    //component to delete all data on the list
     const removeAll = async () => {
         setMainList([]);
         AsyncStorage.clear().then(() => console.log('Cleared'));
     }
 
+    //component to retrieve data from user input
     const getAPI = async (coin) => {
 
         //change all to capital letters to be inserted into the link
@@ -110,7 +115,7 @@ const ListScreen = ({navigation}) => {
         });
     }
 
-    //initial render
+    //initial render, only runs once
     useEffect(() => {
 
         //reset the mainList
@@ -147,6 +152,190 @@ const ListScreen = ({navigation}) => {
         }   
     }, [apiData]);
 
+    //popup window states
+    const [popupDisplay, setPopupDisplay] = useState(false);
+    const popupName = useRef(null);
+    const popupJson = useRef(null);
+    const popupDates = useRef(null);
+    const [showButtons, setShowButtons] = useState(false);
+    const [showBuy, setShowBuy] = useState(false);
+    const [displays, setDisplays] = useState(
+        {options: {
+            popup: false,
+            buy: false,
+            sell: false,
+            buttons: false,
+        }
+    })
+
+    //popup container component 
+    const PopupContainer = ({popupDisplay, children}) => {
+
+        const [showPopup, setShowPopup] = useState(true);
+
+        useEffect(() => {
+
+            popupDisplay ? setShowPopup(true) : setShowPopup(false)
+
+        },[popupDisplay]);
+
+        return (
+            <Modal transparent visible={showPopup} >
+                <View style={styles.popupContainer}>
+                    <View style={styles.popup}>
+                        {children}
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
+
+    //popup component
+    const Popup = () => {
+
+        return (                        
+        <PopupContainer popupDisplay={displays.options.popup}>
+            <View style={styles.popupX}>
+                <Text style={styles.titleText}>{popupName.current}</Text>
+                <TouchableOpacity onPress={()=>{setDisplays({...displays, options: {
+                        popup: false,
+                        sell: false,
+                        buy: false,
+                        buttons: false,
+                    },
+                })}}>
+                    <Text style={styles.popupXText}>X</Text>
+                </TouchableOpacity>
+            </View>
+
+            
+            { displays.options.buttons ? 
+                <View style={styles.popupButtonContainer}>
+                    <TouchableOpacity style={styles.popupButton} onPress={() => {setDisplays({...displays, options: {
+                            popup: true,
+                            buy: true,
+                            sell: false,
+                            buttons: false,
+                        },
+                    })}}>
+                        <Text style={styles.popupButtonText}>Buy</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.popupButton} onPress={() => {setDisplays({...displays, options: {
+                            popup: true,
+                            buy: false,
+                            sell: true,
+                            buttons: false,
+                        },
+                    })}}>
+                        <Text style={styles.popupButtonText}>Sell</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.popupButton} onPress={()=> {navigation.navigate("DetailScreen", {"Json": popupJson.current, "Dates": popupDates.current}); setDisplays({...displays, options: {
+                            popup: false,
+                            sell: false,
+                            buy: false,
+                            buttons: false,
+                        },
+                    })}}>
+                        <Text style={styles.popupButtonText}>Details</Text>
+                    </TouchableOpacity>
+                </View> 
+            : null }
+
+            {displays.options.buy ? 
+                <View>
+                    <View style={styles.popupInputContainer}>
+                        <Text style={styles.popupInputTitle}>Buy amount (USD):</Text>
+                        <TextInput style = {styles.popupInput} placeholder="  Enter amount (USD)" returnKeyType="send" onSubmitEditing={() => {}}/>
+                    </View> 
+                    <TouchableOpacity style={styles.popupBack} onPress={()=> {setDisplays({...displays, options: {
+                            popup: true,
+                            sell: false,
+                            buy: false,
+                            buttons: true,
+                        },
+                    });}}>
+                            <Text style = {styles.popupBackText}>Back</Text>
+                    </TouchableOpacity>
+                </View> : null}
+
+                {displays.options.sell ? 
+                <View>
+                    <View style={styles.popupInputContainer}>
+                        <Text style={styles.popupInputTitle}>Sell amount (USD):</Text>
+                        <TextInput style = {styles.popupInput} placeholder="  Enter amount (USD)" returnKeyType="send" onSubmitEditing={() => {}}/>
+                    </View> 
+                    <TouchableOpacity style={styles.popupBack} onPress={()=> {setDisplays({...displays, options: {
+                            popup: true,
+                            sell: false,
+                            buy: false,
+                            buttons: true,
+                        },
+                    });}}>
+                            <Text style = {styles.popupBackText}>Back</Text>
+                    </TouchableOpacity>
+                </View> : null}
+        </PopupContainer>)
+    }
+
+    //component to render the list of items
+    const renderList = useMemo(() => {
+            //useMemo is used to prevent unnessary renders if the mainlist state remains the same. 
+            return(
+            //because mainList is an array, to be able to use map, it needs to be an object. So [...] spread syntax converts it into an object so that map function can be used on it.
+            [...mainList].map((object) => {
+                return (
+                //swipe to delete functionality
+                <Swipeable renderLeftActions={() => {
+                    return(
+                        <TouchableOpacity style={styles.swipeContainer} onPress={()=>removeData(object.Currency.toString())}>
+                        <View >
+                            <Text style={styles.swipeText}>Delete</Text>
+                        </View>
+                        </TouchableOpacity>)
+                }} 
+                friction={2} key={object.Currency.toString()}>
+
+                    <View style={styles.cell}>
+
+                    {/* ()=> navigation.navigate("DetailScreen", {"Json": object.Json, "Dates": object.Dates}) */}
+                    
+                        <TouchableOpacity onPress={()=> {popupName.current = object.Fullname; popupJson.current = object.Json; popupDates.current = object.Dates; 
+                            setDisplays({...displays, options: {
+                                popup: true,
+                                buy: false,
+                                sell: false,
+                                buttons: true,
+                            },
+                        })}}>
+                            <Text style={styles.boldText}>{`Currency: ${object.Fullname} (${object.Currency})`}</Text>
+                            <Text>{`Latest price: USD ${object["Today"]}`}</Text>
+
+                            {/* display price movement information. This is conditional. If price movement is positive, then a green up arrow is displayed, otherwise, a red down arrow is displayed.  */}
+                            {object.Movement > 0 
+                            ? 
+                            <View style={styles.cellItem}><Text>Price Movement: </Text><Ionicons name='arrow-up-circle' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Movement}%</Text></View> 
+                            : 
+                            <View style={styles.cellItem}><Text>Price movement: </Text><Ionicons name='arrow-down-circle-sharp' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Movement}%</Text></View>}
+
+                            {/* display recommendation based on the calculated moving average. If the recommendation is buy, then a green thumbs up will show, otherwise a red thumbs down will show.  */}
+                            {object.Recommend == "BUY" 
+                            ? 
+                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='thumbs-up' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Recommend}</Text></View>
+                            :
+                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='md-thumbs-down' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Recommend}</Text></View>
+                            }
+                            
+                        </TouchableOpacity>
+                    </View>
+                </Swipeable>
+                )
+            }))
+
+    }, [mainList])
+
+
     if(mainList.length != 0)
     {
         return(
@@ -167,48 +356,8 @@ const ListScreen = ({navigation}) => {
                 </View>
                 <View>
                         <Text style={styles.lastRefreshed}>Last refreshed: {lastRefreshed}</Text>
-                        {
-                            [...mainList].map((object) => {
-                                return (
-
-                                //swipe to delete functionality
-                                <Swipeable renderLeftActions={() => {
-                                    return(
-                                        <TouchableOpacity style={styles.swipeContainer} onPress={()=>removeData(object.Currency.toString())}>
-                                        <View >
-                                            <Text style={styles.swipeText}>Delete</Text>
-                                        </View>
-                                        </TouchableOpacity>)
-                                }} 
-                                friction={2} key={object.Currency.toString()}>
-
-                                    <View style={styles.cell}>
-                                    
-                                        <TouchableOpacity onPress={()=> navigation.navigate("DetailScreen", {"Json": object.Json, "Dates": object.Dates})}>
-                                            <Text style={styles.boldText}>{`Currency: ${object.Fullname} (${object.Currency})`}</Text>
-                                            <Text>{`Latest price: USD ${object["Today"]}`}</Text>
-
-                                            {/* display price movement information. This is conditional. If price movement is positive, then a green up arrow is displayed, otherwise, a red down arrow is displayed.  */}
-                                            {object.Movement > 0 
-                                            ? 
-                                            <View style={styles.cellItem}><Text>Price Movement: </Text><Ionicons name='arrow-up-circle' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Movement}%</Text></View> 
-                                            : 
-                                            <View style={styles.cellItem}><Text>Price movement: </Text><Ionicons name='arrow-down-circle-sharp' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Movement}%</Text></View>}
-
-                                            {/* display recommendation based on the calculated moving average. If the recommendation is buy, then a green thumbs up will show, otherwise a red thumbs down will show.  */}
-                                            {object.Recommend == "BUY" 
-                                            ? 
-                                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='thumbs-up' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Recommend}</Text></View>
-                                            :
-                                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='md-thumbs-down' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Recommend}</Text></View>
-                                            }
-                                            
-                                        </TouchableOpacity>
-                                    </View>
-                                </Swipeable>
-                                )
-                            })
-                        }
+                        <Popup/>
+                        {renderList}
                 </View>
               </ScrollView>
             </SafeAreaView>

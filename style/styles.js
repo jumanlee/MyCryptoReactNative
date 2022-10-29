@@ -112,6 +112,109 @@ const styles=StyleSheet.create({
           width: '100%',
           backgroundColor: 'rgba(0,0,0,0.5)',
           marginBottom: '2%',
+      },
+
+      popupContainer: {
+        height: '100%', 
+        width: '100%', 
+        backgroundColor: 'rgba(	93, 84, 164, 0.8)',
+      },
+
+      popup:{
+        height: '35%', 
+        width: '80%', 
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        marginTop: '50%',
+        marginBottom: '40%',
+        marginLeft: '10%',
+        marginRight: '10%',
+        borderRadius: 20,
+      },
+
+
+      popupX:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginLeft: '10%',
+        marginRight: '10%',
+        marginTop: '8%',
+
+      },
+
+      popupXText:{
+          fontWeight: 'bold',
+          fontSize: 15,
+          paddingTop: '0%',
+          paddingRight: '5%',
+          paddingLeft: '5%',
+          paddingBottom: '5%',
+
+      },
+      
+      popupButtonContainer:{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          marginTop: '18%',
+      },
+
+      popupButton: {
+          backgroundColor: 'rgba(75,0,130, 0.5)',
+          paddingRight: '7%',
+          paddingLeft: '7%',
+          paddingTop: '3%',
+          paddingBottom: '3%',
+          borderRadius: 10,
+      },
+
+      popupButtonText: {
+        color: '#DCDCDC',
+        textAlign: 'center',
+      },
+
+      popupInputTitle: {
+        marginTop: '5%',
+        marginLeft: '5%'
+      },
+
+      popupInputContainer: {
+        backgroundColor: '#D8BFD8',
+        // width: '95%',
+        // marginLeft: '2.5%',
+        // marginRight: '2.5%',
+        // borderRadius: 20
+      },
+
+      popupInput: {
+        width: '80%',
+        backgroundColor: '#E6E6FA',
+        marginLeft: '5%',
+        marginTop: '5%',
+        marginBottom: '5%',
+        paddingTop: '2.5%',
+        paddingLeft: '2.5%',
+        paddingBottom: '2.5%',
+        borderRadius: 10,
+        color: 'grey',
+      },
+
+      popupBack: {
+        marginTop: '5%',
+        marginLeft: '5%',
+        marginBottom: '5%',
+        backgroundColor: 'rgba(75,0,130, 0.5)',
+        paddingRight: '7%',
+        paddingLeft: '7%',
+        paddingTop: '3%',
+        paddingBottom: '3%',
+        borderRadius: 10,
+        width: '35%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+      },
+
+      popupBackText: {
+          textAlign: 'center',
+          color: '#DCDCDC',
       }
 })
 
