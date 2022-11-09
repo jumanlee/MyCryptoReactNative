@@ -8,6 +8,7 @@ import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import {Ionicons} from '@expo/vector-icons';
 import HomeScreenApp from './Homescreen';
 import NewsScreenApp from './Newsscreen';
+import Walletscreen from './Walletscreen';
 import React from 'react';
 
 const Tab = createBottomTabNavigator();
@@ -26,11 +27,16 @@ const Tabscreens = () => {
                 ? 'stopwatch'
                 : 'stop-circle';
 
+            } else if (route.name === 'Wallet') {
+                iconName = focused
+                ? 'stopwatch'
+                : 'stop-circle';
+                
             } else if (route.name === 'News') {
               iconName = focused
               ? 'stopwatch'
               : 'stop-circle';
-            }
+            } 
 
           return <Ionicons name={iconName} size={35} color={color}/>;
           }, headerShown: false,
@@ -39,7 +45,9 @@ const Tabscreens = () => {
         })}
       >
         <Tab.Screen name="Watchlist" component={HomeScreenApp}/>
+        <Tab.Screen name="Wallet" component={Walletscreen}/>
         <Tab.Screen name="News" component={NewsScreenApp}/>
+        
       </Tab.Navigator>
     </NavigationContainer>
 

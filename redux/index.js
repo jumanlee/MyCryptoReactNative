@@ -1,0 +1,1 @@
+export { deductWallet } from './actions'

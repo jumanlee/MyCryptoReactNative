@@ -121,7 +121,9 @@ const styles=StyleSheet.create({
       },
 
       popup:{
-        height: '35%', 
+        borderWidth: 3,
+        borderColor: 'rgba(75,0,130, 0.5)',
+        paddingBottom: '8%',
         width: '80%', 
         backgroundColor: 'rgba(255,255,255,0.8)',
         marginTop: '50%',
@@ -172,24 +174,23 @@ const styles=StyleSheet.create({
       },
 
       popupInputTitle: {
-        marginTop: '5%',
+        marginTop: '3%',
         marginLeft: '5%'
       },
 
       popupInputContainer: {
         backgroundColor: '#D8BFD8',
-        // width: '95%',
-        // marginLeft: '2.5%',
-        // marginRight: '2.5%',
-        // borderRadius: 20
+        paddingBottom: '2%',
+        paddingTop: '2%',
+        paddingBottom: '3%'
       },
 
       popupInput: {
-        width: '80%',
+        width: '50%',
         backgroundColor: '#E6E6FA',
         marginLeft: '5%',
-        marginTop: '5%',
-        marginBottom: '5%',
+        marginTop: '2%',
+        marginBottom: '2%',
         paddingTop: '2.5%',
         paddingLeft: '2.5%',
         paddingBottom: '2.5%',
@@ -199,7 +200,6 @@ const styles=StyleSheet.create({
 
       popupBack: {
         marginTop: '5%',
-        marginLeft: '5%',
         marginBottom: '5%',
         backgroundColor: 'rgba(75,0,130, 0.5)',
         paddingRight: '7%',
@@ -215,7 +215,15 @@ const styles=StyleSheet.create({
       popupBackText: {
           textAlign: 'center',
           color: '#DCDCDC',
-      }
+      },
+
+
+      walletContainer: {
+        flex: 1,
+        height: '100%',
+        marginTop: '10%',
+
+      },
 })
 
 export default styles;

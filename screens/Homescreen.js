@@ -13,6 +13,7 @@ import ListScreen from './components/ListScreen';
 import DetailScreen from './components/DetailScreen';
 
 
+
 // NOTE TO MARKER
 // Please note that as this is a third party API, I cannot guarantee that the API server is always up and running. In the unlikely event that the API server is down, please wait for a few hours or come back the following day and try the app again. In any case, I have already recorded a video, which has been uploaded onto Youtube https://www.youtube.com/watch?v=zzggsHxq0ic&t=9s demonstrating how the app is used. In that video, it is shown how the API data is fetched successfully when the server is up and running. To test whether the API server is down, just visit www.alphavantage.co and it should be up and running if the server is operational. 
 
