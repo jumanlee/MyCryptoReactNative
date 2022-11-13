@@ -9,17 +9,32 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {recommendAlgo, calculateMovement} from './algo';
-import { deductWallet, addWallet } from '../../redux/actions';
-import { connect } from 'react-redux'
+import {recommendAlgo, calculateMovement} from './listscreen-components/algo';
+import Popup from './listscreen-components/Popup';
+import renderList from './listscreen-components/renderList';
 
-const ListScreen = ({navigation, funds, deductWallet, addWallet}) => {
+
+const ListScreen = ({navigation}) => {
 
     //general app states
     const [name, setName] = useState('');
     const [mainList, setMainList] = useState([]);
     const [apiData, setApiData] = useState(null);
     const [lastRefreshed, setLastRefreshed] = useState(null);
+
+    //popup window states
+    const popupName = useRef(null);
+    const popupJson = useRef(null);
+    const popupDates = useRef(null);
+    const popupPrice = useRef(null);
+    const [displays, setDisplays] = useState(
+        {options: {
+            popup: false,
+            buy: false,
+            sell: false,
+            buttons: false,
+        }
+    })
    
     //component to save data 
     const setData = async () => {
@@ -153,261 +168,17 @@ const ListScreen = ({navigation, funds, deductWallet, addWallet}) => {
         }   
     }, [apiData]);
 
-    //popup window states
-    const popupName = useRef(null);
-    const popupJson = useRef(null);
-    const popupDates = useRef(null);
-    const popupPrice = useRef(null);
-    const quantityInput = useRef(null);
-    const priceInput = useRef(null);
-    const [displays, setDisplays] = useState(
-        {options: {
-            popup: false,
-            buy: false,
-            sell: false,
-            buttons: false,
-        }
-    })
-
-    //popup container component 
-    const PopupContainer = ({popupDisplay, children}) => {
-
-        return (
-            <Modal transparent visible={popupDisplay} 
-            backdropTransitionOutTiming={0}>
-                {/* placed touchablewithoutfeedback so that user can dismiss keyboard by clicking elswhere on the popup when no longer wants to edit in the input field */}
-                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                    <View style={styles.popupContainer}>
-                        <View style={styles.popup}>
-                                {children}
-                        </View>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-        )
-    }
-
-    //popup component
-    const Popup = () => {
-
-        return (                        
-        <PopupContainer popupDisplay={displays.options.popup}>
-            <View style={styles.popupX}>
-
-                <Text style={styles.titleText}>{popupName.current} price:</Text>
-
-                <TouchableOpacity onPress={()=>{setDisplays({...displays, options: {
-                        popup: false,
-                        sell: false,
-                        buy: false,
-                        buttons: false,
-                    },
-                })}}>
-                    <Text style={styles.popupXText}>X</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.popupX}>
-                <Text style={{...styles.titleText, marginBottom: '3%'} }>US${popupPrice.current}</Text>
-            </View>
-            
-
-            {displays.options.buy ? 
-                <View>
-                    <View style={styles.popupInputContainer}>
-                        <Text style={styles.popupInputTitle}>Price (USD):</Text>
-                        <TextInput style = {styles.popupInput} placeholderTextColor={'grey'} placeholder="Enter price (USD)"  onChangeText={(value) => priceInput.current = value}  keyboardType="numeric"/>
-                        <Text style={styles.popupInputTitle}>Quantity:</Text>
-                        <TextInput style = {styles.popupInput} placeholderTextColor={'grey'} placeholder="Enter quantity"  onChangeText={(value) => quantityInput.current = value} keyboardType="numeric"/>
-                    </View> 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                        <TouchableOpacity style={styles.popupBack} onPress={()=> { 
-
-                                if(priceInput.current != null && quantityInput.current != null){
-
-                                    let totalAmount = priceInput.current*quantityInput.current;
-
-                                    if(totalAmount > funds){
-                                        Alert.alert("Insufficient funds. Please top up your wallet!");
-                                    }else if(parseFloat(priceInput.current) < parseFloat(popupPrice.current)){
-                                        Alert.alert("You can't buy lower than the market price! You're very unlikely to get an order filled in the real world!");
-                                    }else{
-                                        deductWallet(totalAmount);
-                                        quantityInput.current = null;
-                                        priceInput.current = null;
-
-                                        //reset the popup window, close it. 
-                                        setDisplays({...displays, options: {
-                                            popup: false,
-                                            sell: false,
-                                            buy: false,
-                                            buttons: false,
-                                        }})
-                                    }
-                                }
-                            }}>
-                                <Text style = {styles.popupBackText}>Buy</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.popupBack} onPress={()=> {setDisplays({...displays, options: {
-                                popup: true,
-                                sell: false,
-                                buy: false,
-                                buttons: true,
-                            },
-                        });}}>
-                                <Text style = {styles.popupBackText}>Back</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
-                </View> : null}
-
-                {displays.options.sell ? 
-                <View>
-                <View style={styles.popupInputContainer}>
-                    <Text style={styles.popupInputTitle}>Price (USD):</Text>
-                    <TextInput style = {styles.popupInput} placeholder="Enter price (USD)" returnKeyType="send" onChangeText={(value) => priceInput.current = value}  keyboardType="numeric"/>
-                    <Text style={styles.popupInputTitle}>Quantity:</Text>
-                    <TextInput style = {styles.popupInput} placeholder="Enter quantity (USD)" returnKeyType="send" onChangeText={(value) => quantityInput.current = value} keyboardType="numeric"/>
-                </View> 
-                <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                    <TouchableOpacity style={styles.popupBack} onPress={()=> {
-                            if(priceInput.current != null && quantityInput.current != null){
-
-                                let totalAmount = priceInput.current*quantityInput.current;
-
-                                if(parseFloat(priceInput.current) > parseFloat(popupPrice.current)){
-                                    Alert.alert("You can't sell higher than the market price! You're very unlikely to get an order filled in the real world!");
-                                }else{
-                                    addWallet(totalAmount);
-                                    quantityInput.current = null;
-                                    priceInput.current = null;
-
-                                    //reset the popup window, close it. 
-                                    setDisplays({...displays, options: {
-                                        popup: false,
-                                        sell: false,
-                                        buy: false,
-                                        buttons: false,
-                                    }})
-                                }
-                            }
-                    }}>
-                            <Text style = {styles.popupBackText}>Sell</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.popupBack} onPress={()=> {setDisplays({...displays, options: {
-                            popup: true,
-                            sell: false,
-                            buy: false,
-                            buttons: true,
-                        },
-                    });}}>
-                            <Text style = {styles.popupBackText}>Back</Text>
-                    </TouchableOpacity>
-                </View>
-                
-            </View> : null}
-
-                { displays.options.buttons ? 
-                <View style={styles.popupButtonContainer}>
-                    <TouchableOpacity style={styles.popupButton} onPress={() => {setDisplays({...displays, options: {
-                            popup: true,
-                            buy: true,
-                            sell: false,
-                            buttons: false,
-                        },
-                    })}}>
-                        <Text style={styles.popupButtonText}>Buy</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.popupButton} onPress={() => {setDisplays({...displays, options: {
-                            popup: true,
-                            buy: false,
-                            sell: true,
-                            buttons: false,
-                        },
-                    })}}>
-                        <Text style={styles.popupButtonText}>Sell</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.popupButton} onPress={()=> {navigation.navigate("DetailScreen", {"Json": popupJson.current, "Dates": popupDates.current}); setDisplays({...displays, options: {
-                            popup: false,
-                            sell: false,
-                            buy: false,
-                            buttons: false,
-                        },
-                    })}}>
-                        <Text style={styles.popupButtonText}>Details</Text>
-                    </TouchableOpacity>
-                </View> 
-            : null }
-        </PopupContainer>)
-    }
-
-    //component to render the list of items
-    const renderList = useMemo(() => {
-            //useMemo is used to prevent unnessary renders if the mainlist state remains the same. 
-            return(
-            //because mainList is an array, to be able to use map, it needs to be an object. So [...] spread syntax converts it into an object so that map function can be used on it.
-            [...mainList].map((object) => {
-                return (
-                //swipe to delete functionality
-                <Swipeable renderLeftActions={() => {
-                    return(
-                        <TouchableOpacity style={styles.swipeContainer} onPress={()=>removeData(object.Currency.toString())}>
-                        <View >
-                            <Text style={styles.swipeText}>Delete</Text>
-                        </View>
-                        </TouchableOpacity>)
-                }} 
-                friction={2} key={object.Currency.toString()}>
-
-                    <View style={styles.cell}>
-
-                    {/* ()=> navigation.navigate("DetailScreen", {"Json": object.Json, "Dates": object.Dates}) */}
-                    
-                        <TouchableOpacity onPress={()=> {popupName.current = object.Fullname; popupJson.current = object.Json; popupDates.current = object.Dates; popupPrice.current = object.Today
-                            setDisplays({...displays, options: {
-                                popup: true,
-                                buy: false,
-                                sell: false,
-                                buttons: true,
-                            },
-                        })}}>
-                            <Text style={styles.boldText}>{`Currency: ${object.Fullname} (${object.Currency})`}</Text>
-                            <Text>{`Latest price: USD ${object["Today"]}`}</Text>
-
-                            {/* display price movement information. This is conditional. If price movement is positive, then a green up arrow is displayed, otherwise, a red down arrow is displayed.  */}
-                            {object.Movement > 0 
-                            ? 
-                            <View style={styles.cellItem}><Text>Price Movement: </Text><Ionicons name='arrow-up-circle' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Movement}%</Text></View> 
-                            : 
-                            <View style={styles.cellItem}><Text>Price movement: </Text><Ionicons name='arrow-down-circle-sharp' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Movement}%</Text></View>}
-
-                            {/* display recommendation based on the calculated moving average. If the recommendation is buy, then a green thumbs up will show, otherwise a red thumbs down will show.  */}
-                            {object.Recommend == "BUY" 
-                            ? 
-                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='thumbs-up' size={20} color='rgba(0,255,0,0.5)' /><Text> {object.Recommend}</Text></View>
-                            :
-                            <View style={styles.cellItem}><Text>Recomend: </Text><Ionicons name='md-thumbs-down' size={20} color='rgba(255,0,0,0.5)' /><Text> {object.Recommend}</Text></View>
-                            }
-                            
-                        </TouchableOpacity>
-                    </View>
-                </Swipeable>
-                )
-            }))
-
-    }, [mainList])
-
+    //generate the list of cryptocurrencies and return below
+    const generateList = renderList(mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData);
 
     if(mainList.length != 0)
     {
         return(
-            
             <SafeAreaView style={styles.container}>
-              <Popup/>
+
+              {/* popup window component. Passing down all the neccessary props */}
+              <Popup displays={displays} popupJson={popupJson} popupDates={popupDates} popupName={popupName} popupPrice={popupPrice} setDisplays={setDisplays} navigation={navigation}/>
+
               <ScrollView style={{height:"100%"}}> 
                 <View style={styles.inputField}>
                     <Ionicons name='add' size={20} />
@@ -424,7 +195,9 @@ const ListScreen = ({navigation, funds, deductWallet, addWallet}) => {
                 </View>
                 <View>
                         <Text style={styles.lastRefreshed}>Last refreshed: {lastRefreshed}</Text>
-                        {renderList}
+
+                        {/* function to generate the list of cryptocurrency items */}
+                        {generateList}
                 </View>
               </ScrollView>
             </SafeAreaView>
@@ -452,24 +225,5 @@ const ListScreen = ({navigation, funds, deductWallet, addWallet}) => {
     }
 }
 
-const mapStateToProps = state => {
-    // console.log(state.funds);
-    return {
-        funds: state.funds
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        //match deductWallet() to a prop called deductWallet
-        deductWallet: (_deductedAmount) => dispatch(deductWallet(_deductedAmount)),
-        addWallet: (_addedAmount) => dispatch(addWallet(_addedAmount)),
-    }
-}
-
-//connect states and despatches to props
-export default connect(
-    mapStateToProps, 
-    mapDispatchToProps
-    )(ListScreen)
+export default ListScreen;
 
