@@ -8,13 +8,17 @@ import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import Tabscreens from "./screens/Tabscreens";
 import React from 'react';
 import { Provider } from 'react-redux'
-import store from './redux/store'
+import { PersistGate } from 'redux-persist/integration/react'
+import {store, persistor} from './redux/store'
+
 
 
 export default function App() {
   return (
     <Provider store={store}>
+      <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
         <Tabscreens/>
+      </PersistGate>
     </Provider>
   );
 }
