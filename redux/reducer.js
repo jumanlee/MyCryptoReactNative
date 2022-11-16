@@ -1,11 +1,12 @@
 //actions is an object
-import {WALLET_DEDUCTED, WALLET_ADDED} from './actionTypes';
+import {WALLET_DEDUCTED, WALLET_ADDED, TRANSAC_ADDED} from './actionTypes';
 
-const initialState = {
-    funds: 100
+export const initialState = {
+    funds: 0,
+    transactions: [],
 }
 
-const walletReducer = (state = initialState, action) => {
+export const walletReducer = (state = initialState, action) => {
     switch(action.type){
         case WALLET_DEDUCTED: return {
             ...state,
@@ -14,15 +15,30 @@ const walletReducer = (state = initialState, action) => {
         }
         break;
 
-        case WALLET_ADDED: return {
+        case WALLET_ADDED: console.log(state);return {
             ...state,
+            
             funds: parseFloat(state.funds) + parseFloat(action.value)
         }
         break;
-
 
         default: return state
     }
 }
 
-export default walletReducer;
+
+export const transacReducer = (state = initialState, action) => {
+    switch(action.type){
+        case TRANSAC_ADDED: return {
+            ...state,
+            transactions: state.transactions.concat({date: action.date, item: action.item})
+        }
+        break;
+
+        default: return state
+    }
+}
+
+
+
+

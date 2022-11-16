@@ -217,13 +217,28 @@ const styles=StyleSheet.create({
           color: '#DCDCDC',
       },
 
-
       walletContainer: {
         flex: 1,
         height: '100%',
-        marginTop: '10%',
+        marginTop: '3%',
 
       },
+
+      reset: {
+        marginTop: '5%',
+        marginBottom: '1%',
+        marginLeft: '5%',
+        backgroundColor: 'rgba(75,0,130, 0.5)',
+        paddingRight: '7%',
+        paddingLeft: '5%',
+        paddingTop: '3%',
+        paddingBottom: '3%',
+        borderRadius: 10,
+        width: '30%',
+        flexDirection: 'row',
+        justifyContent: 'center',
+
+      }
 })
 
 export default styles;

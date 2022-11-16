@@ -9,7 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { deductWallet, addWallet } from '../../../redux/actions';
+import { deductWallet, addWallet, reset } from '../../../redux/actions';
 import { connect } from 'react-redux';
 
 //popup container component 
@@ -183,7 +183,7 @@ const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPr
 const mapStateToProps = state => {
     // console.log(state.funds);
     return {
-        funds: state.funds
+        funds: state.wallet.funds
     }
 }
 
@@ -192,6 +192,8 @@ const mapDispatchToProps = dispatch => {
         //match deductWallet() to a prop called deductWallet
         deductWallet: (_deductedAmount) => dispatch(deductWallet(_deductedAmount)),
         addWallet: (_addedAmount) => dispatch(addWallet(_addedAmount)),
+        reset: () => dispatch(reset()),
+
     }
 }
 

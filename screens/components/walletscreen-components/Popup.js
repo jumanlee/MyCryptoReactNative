@@ -100,7 +100,7 @@ import { connect } from 'react-redux';
     const mapStateToProps = state => {
         // console.log(state.funds);
         return {
-            funds: state.funds
+            funds: state.wallet.funds
         }
     }
     
