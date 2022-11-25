@@ -10,13 +10,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 // import {recommendAlgo, calculateMovement} from './algo';
-import { addWallet, deductWallet, reset, addTransac, transactions } from '../redux/actions';
+import { addWallet, deductWallet, addTransac, clearTransac, transactions } from '../redux/actions';
 import { connect } from 'react-redux'
 import styles from '../style/styles';
 import Popup from './components/walletscreen-components/Popup';
 
-const Walletscreen = ({funds, reset, addTransac, transactions}) => {
-
+const Walletscreen = ({funds, transactions, clearTransac}) => {
 
        const [displays, setDisplays] = useState(
         {options: {
@@ -25,19 +24,14 @@ const Walletscreen = ({funds, reset, addTransac, transactions}) => {
             withdrawFunds: false,
         }
     })
-
+    
     return(
         <SafeAreaView style={styles.container}>
             <ScrollView style={{height:"100%"}}>
-        
 
             <Popup displays={displays} setDisplays={setDisplays}/>
 
             <View style={styles.walletContainer}>
-                <TouchableOpacity style={styles.reset} onPress={() => reset()}>
-                    <Text style={styles.popupButtonText}>Reset</Text>
-                </TouchableOpacity>
-
                 <View style = {styles.titleContainer}>
                     <Text style={styles.titleText}>Wallet</Text>
                 </View>
@@ -60,9 +54,6 @@ const Walletscreen = ({funds, reset, addTransac, transactions}) => {
                             withdrawFunds: true,
                             },
                         });
-
-                        //code here transaction
-                        addTransac("a date", "an item");
                         
                         }}>
                                 <Text style={styles.popupButtonText}>Withdraw funds</Text>
@@ -71,12 +62,15 @@ const Walletscreen = ({funds, reset, addTransac, transactions}) => {
                 </View>
 
                 <View style = {styles.titleContainer}>
-                    <Text style={styles.titleText}>Transactions</Text>
+                    <View>
+                        <Text style={styles.titleText}>Transactions</Text>
+                    </View>
+                    <TouchableOpacity style={styles.popupButton} onPress={() => clearTransac()}>
+                        <Text style={styles.popupButtonText}>Clear</Text>
+                    </TouchableOpacity>
                 </View>
 
-
                 <View style={styles.cell}>
-
                     <View>
                         {
                             // if transactions doesn't hold an empty array, then return the following:
@@ -84,20 +78,18 @@ const Walletscreen = ({funds, reset, addTransac, transactions}) => {
                             <View>{
                                 [...transactions].map((object, index) => {
                                     return(
-                                        <Text key={index}>{object.date}</Text>
+                                        <View key={index} style={styles.transacContainer}>
+                                            <Text style={styles.boldText}>{object.dateTime}</Text>
+                                            <Text>{object.item}</Text>
+                                        </View>
                                     )
-
                                 }
-                                
-                                
                                 )}</View> :
-                            null
+                            <View>
+                                <Text style={styles.boldText}>No transactions to show</Text>
+                            </View>
                         }
-                    </View>
-
-
-
-                       
+                    </View>  
                 </View>
             </View>
             </ScrollView>
@@ -118,8 +110,8 @@ const mapDispatchToProps = dispatch => {
         //match deductWallet() to a prop called deductWallet
         deductWallet: (_deductedAmount) => dispatch(deductWallet(_deductedAmount)),
         addWallet: (_addedAmount) => dispatch(addWallet(_addedAmount)),
-        addTransac: (date, item) => dispatch(addTransac(date, item)),
-        reset: () => dispatch(reset()),
+        addTransac: (dateTime, item) => dispatch(addTransac(dateTime, item)),
+        clearTransac: () => dispatch(clearTransac()),
     }
 }
 

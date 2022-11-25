@@ -237,8 +237,16 @@ const styles=StyleSheet.create({
         width: '30%',
         flexDirection: 'row',
         justifyContent: 'center',
+      },
 
+      transacContainer: {
+        marginBottom: '3%',
+      },
+
+      cellText: {
+        color: 'black',
       }
+
 })
 
 export default styles;

@@ -13,14 +13,18 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 
 
+
 //component to render the list of items
 const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData) => useMemo(() => {
 
-    console.log("render2");
+    console.log("render within useMemo");
     //useMemo is used to prevent unnessary renders if the mainlist state remains the same. 
     return(
-    //because mainList is an array, to be able to use map, it needs to be an object. So [...] spread syntax converts it into an object so that map function can be used on it.
+    //because mainList is an array, if you put [mainlist] it would mean [["Content"]], so you need to use ...mainlist to CLONE the content into [].
     [...mainList].map((object) => {
+
+        // updateAssetPrice(object.Fullname, object.Today);
+
         return (
         //swipe to delete functionality
         <Swipeable renderLeftActions={() => {
@@ -68,5 +72,6 @@ const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, disp
     }))
 
 }, [mainList])
+
 
 export default renderList;

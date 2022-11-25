@@ -9,6 +9,7 @@ import {Ionicons} from '@expo/vector-icons';
 import HomeScreenApp from './Homescreen';
 import NewsScreenApp from './Newsscreen';
 import Walletscreen from './Walletscreen';
+import Portfolioscreen from './Portfolioscreen';
 import React from 'react';
 
 const Tab = createBottomTabNavigator();
@@ -31,7 +32,12 @@ const Tabscreens = () => {
                 iconName = focused
                 ? 'stopwatch'
                 : 'stop-circle';
-                
+              
+            } else if (route.name === 'Portfolio') {
+                iconName = focused
+                ? 'stopwatch'
+                : 'stop-circle';
+              
             } else if (route.name === 'News') {
               iconName = focused
               ? 'stopwatch'
@@ -46,6 +52,7 @@ const Tabscreens = () => {
       >
         <Tab.Screen name="Watchlist" component={HomeScreenApp}/>
         <Tab.Screen name="Wallet" component={Walletscreen}/>
+        <Tab.Screen name="Portfolio" component={Portfolioscreen}/>
         <Tab.Screen name="News" component={NewsScreenApp}/>
         
       </Tab.Navigator>

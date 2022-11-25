@@ -9,13 +9,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { deductWallet, addWallet } from '../../../redux/actions';
+import { deductWallet, addWallet, addTransac, transactions } from '../../../redux/actions';
 import { connect } from 'react-redux';
 
 
+    const Popup = ({displays, setDisplays, funds, addWallet, deductWallet, addTransac, transactions}) => {
 
-    const Popup = ({displays, setDisplays, funds, addWallet, deductWallet}) => {
-
+        //userefs for input amounts
         const addedAmount = useRef(null);
         const deductedAmount = useRef(null);
 
@@ -49,14 +49,24 @@ import { connect } from 'react-redux';
                                             () => { 
                                                 if(addedAmount.current != null){
                                                     addWallet(addedAmount.current);
-                                                    addedAmount.current = null;
+                                                    
                                                     setDisplays({...displays, options: {
                                                         popup: false,
                                                         addFunds: false,
                                                         withdrawFunds: false,
                                                         },
                                                     });
+                                                    
+                                                    //opeartions to send info to transaction reducer so that the transactions will be displayed in the transactions section.
+
+                                                    let item = `Added funds of USD ${addedAmount.current}`;
+                                                    addTransac(item);
+
+                                                    //reset addedAmount back to null
+                                                    addedAmount.current = null;
                                                 }
+
+                                                
                                             }}>
                                                 <Text style = {styles.popupButtonText}>Submit</Text>
                                         </TouchableOpacity>
@@ -75,13 +85,21 @@ import { connect } from 'react-redux';
                                             () => { 
                                                 if(deductedAmount.current != null){
                                                     deductWallet(deductedAmount.current);
-                                                    deductedAmount.current = null;
+                                                    
                                                     setDisplays({...displays, options: {
                                                         popup: false,
                                                         addFunds: false,
                                                         withdrawFunds: false,
                                                         },
                                                     });
+
+                                                    //opeartions to send info to transaction reducer so that the transactions will be displayed in the transactions section.
+
+                                                    let item = `Withdrew funds of USD ${deductedAmount.current}`;
+                                                    addTransac(item);
+
+                                                    //reset deductedAmount 
+                                                    deductedAmount.current = null;
                                                 }
                                             }}>
                                                 <Text style = {styles.popupButtonText}>Submit</Text>
@@ -100,7 +118,8 @@ import { connect } from 'react-redux';
     const mapStateToProps = state => {
         // console.log(state.funds);
         return {
-            funds: state.wallet.funds
+            funds: state.wallet.funds,
+            transactions: state.transac.transactions,
         }
     }
     
@@ -109,6 +128,7 @@ import { connect } from 'react-redux';
             //match deductWallet() to a prop called deductWallet
             deductWallet: (_deductedAmount) => dispatch(deductWallet(_deductedAmount)),
             addWallet: (_addedAmount) => dispatch(addWallet(_addedAmount)),
+            addTransac: (item) => dispatch(addTransac(item)),
         }
     }
     
@@ -118,4 +138,3 @@ import { connect } from 'react-redux';
         mapDispatchToProps
         )(Popup)
 
-    // export default Popup;

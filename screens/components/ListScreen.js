@@ -12,9 +12,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {recommendAlgo, calculateMovement} from './listscreen-components/algo';
 import Popup from './listscreen-components/Popup';
 import renderList from './listscreen-components/renderList';
+import { updateAssetPrice, assetList } from '../../redux/actions';
+import { connect } from 'react-redux';
 
 
-const ListScreen = ({navigation}) => {
+const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
 
     //general app states
     const [name, setName] = useState('');
@@ -49,7 +51,13 @@ const ListScreen = ({navigation}) => {
             const keys = await AsyncStorage.getAllKeys();
             const result = await AsyncStorage.multiGet(keys);
             for(let i = 0; i < result.length; i++){
-                getAPI(result[i][0]);
+
+                //be sure to ignore redux persist in Async Storage
+                if(result[i][0] != "persist:root"){
+                    //get the result
+                    getAPI(result[i][0]);
+                }
+
             }
         }catch(error){
             console.error("error with AsyncStorage.multiGet(keys) or AsyncStorage.getAllKeys()");
@@ -60,9 +68,14 @@ const ListScreen = ({navigation}) => {
     const removeData = async (currency) => {
         for(let i = mainList.length - 1; i >= 0; i--){
             if(mainList[i].Currency == currency){
-                AsyncStorage.removeItem(currency, (err) => console.log('removed data!', err));
-                //remove the i'th data from mainList
-                setMainList((mainList) => mainList.filter((_, index) => index !== i));
+                //ensure that user is not deleting a currency that they still own
+                if(assetList.hasOwnProperty(mainList[i].Fullname)){
+                    Alert.alert("You can't untrack a currency that you still own. To delete, make sure you've sold off the currency.");
+                }else{
+                    AsyncStorage.removeItem(currency, (err) => console.log('removed data!', err));
+                    //remove the i'th data from mainList
+                    setMainList((mainList) => mainList.filter((_, index) => index !== i));
+                }
                 break;
             }
         }
@@ -128,6 +141,8 @@ const ListScreen = ({navigation}) => {
         })
         .catch((error) => {
             Alert.alert('Error loading API data. This is either due to an invalid ticker symbol being inserted or it is an issue with API provider www.alphavantage.co . If it is because alphavantage.co is down, then please try again later:');
+
+            console.log(error);
         });
     }
 
@@ -167,6 +182,16 @@ const ListScreen = ({navigation}) => {
             }
         }   
     }, [apiData]);
+
+    //For updating prices in portfolio. Use useeffect to track changes in mainlist, if there are changes, then update all the market prices in portfolio. 
+    useEffect(() => {
+
+        if(mainList.length != 0){
+            updateAssetPrice([...mainList]);
+        }
+
+    }, [mainList])
+
 
     //generate the list of cryptocurrencies and return below
     const generateList = renderList(mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData);
@@ -225,5 +250,26 @@ const ListScreen = ({navigation}) => {
     }
 }
 
-export default ListScreen;
+// export default ListScreen;
+
+const mapStateToProps = state => {
+    // console.log(state.funds);
+    return {
+        assetList: state.portfolio.assetList,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+
+        updateAssetPrice: (_mainList) => dispatch(updateAssetPrice(_mainList)),
+
+    }
+}
+
+//connect states and despatches to props
+export default connect(
+    mapStateToProps, 
+    mapDispatchToProps
+    )(ListScreen)
 

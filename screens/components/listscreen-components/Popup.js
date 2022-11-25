@@ -9,11 +9,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { deductWallet, addWallet, reset } from '../../../redux/actions';
+import { deductWallet, addWallet, reset, addTransac, addAsset, sellAsset } from '../../../redux/actions';
 import { connect } from 'react-redux';
 
 //popup container component 
-const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPrice, funds, deductWallet, addWallet, navigation}) => {
+const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPrice, funds, deductWallet, addWallet, addAsset, sellAsset, addTransac, navigation}) => {
 
     //use ref for input values
     const quantityInput = useRef(null);
@@ -64,6 +64,8 @@ const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPr
                                                     Alert.alert("You can't buy lower than the market price! You're very unlikely to get an order filled in the real world!");
                                                 }else{
                                                     deductWallet(totalAmount);
+                                                    addAsset(popupName.current, popupPrice.current, quantityInput.current, totalAmount);
+                                                    addTransac(`Bought ${popupName.current} for USD ${totalAmount}`);
                                                     quantityInput.current = null;
                                                     priceInput.current = null;
 
@@ -111,6 +113,8 @@ const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPr
                                                 Alert.alert("You can't sell higher than the market price! You're very unlikely to get an order filled in the real world!");
                                             }else{
                                                 addWallet(totalAmount);
+                                                sellAsset(popupName.current, popupPrice.current, quantityInput.current, totalAmount);
+                                                addTransac(`Sold ${popupName.current} for USD ${totalAmount}`);
                                                 quantityInput.current = null;
                                                 priceInput.current = null;
 
@@ -183,7 +187,7 @@ const Popup = ({displays, setDisplays, popupJson, popupDates, popupName, popupPr
 const mapStateToProps = state => {
     // console.log(state.funds);
     return {
-        funds: state.wallet.funds
+        funds: state.wallet.funds,
     }
 }
 
@@ -192,8 +196,10 @@ const mapDispatchToProps = dispatch => {
         //match deductWallet() to a prop called deductWallet
         deductWallet: (_deductedAmount) => dispatch(deductWallet(_deductedAmount)),
         addWallet: (_addedAmount) => dispatch(addWallet(_addedAmount)),
+        addAsset: (_name, _marketPrice, _quantity, _invested) => dispatch(addAsset(_name, _marketPrice, _quantity, _invested)),
+        sellAsset: (_name, _marketPrice, _quantity, _sale) => dispatch(sellAsset(_name, _marketPrice, _quantity, _sale)),
+        addTransac: (item) => dispatch(addTransac(item)),
         reset: () => dispatch(reset()),
-
     }
 }
 

@@ -14,5 +14,5 @@ const persistedReducer = persistReducer(persistConfig, rootReducer)
 export const store = createStore(persistedReducer)
 export const persistor = persistStore(store)
 
-// the below is only used for development purposes. Only activate/uncomment when you want to purge all of the existing state in redux persist storage during development when your state is in a very bad place. 
+// the below is only used for development purposes. Only activate/uncomment when you want to purge all of the existing state in redux persist storage during development when your state is in a very bad state. 
 // persistor.purge();
