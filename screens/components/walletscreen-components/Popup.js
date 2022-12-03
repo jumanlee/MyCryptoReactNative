@@ -59,7 +59,7 @@ import { connect } from 'react-redux';
                                                     
                                                     //opeartions to send info to transaction reducer so that the transactions will be displayed in the transactions section.
 
-                                                    let item = `Added funds of USD ${addedAmount.current}`;
+                                                    let item = `Added funds of USD ${parseFloat(addedAmount.current).toLocaleString("en-US")}`;
                                                     addTransac(item);
 
                                                     //reset addedAmount back to null
@@ -82,8 +82,8 @@ import { connect } from 'react-redux';
                                     </View> 
                                     <View style={{flexDirection: 'row', justifyContent: 'flex-start', marginLeft: '5%', marginTop: '1%'}}>
                                         <TouchableOpacity style={styles.popupBack} onPress={
-                                            () => { 
-                                                if(deductedAmount.current != null){
+                                            () => {
+                                                if(deductedAmount.current != null && deductedAmount.current <= funds){
                                                     deductWallet(deductedAmount.current);
                                                     
                                                     setDisplays({...displays, options: {
@@ -95,10 +95,15 @@ import { connect } from 'react-redux';
 
                                                     //opeartions to send info to transaction reducer so that the transactions will be displayed in the transactions section.
 
-                                                    let item = `Withdrew funds of USD ${deductedAmount.current}`;
+                                                    let item = `Withdrew funds of USD ${parseFloat(deductedAmount.current).toLocaleString("en-US")}`;
                                                     addTransac(item);
 
                                                     //reset deductedAmount 
+                                                    deductedAmount.current = null;
+                                                }else if(deductedAmount.current > funds){
+                                                    Alert.alert("You can't withdraw more than the amount of cash you have in your wallet!");
+
+                                                    //reset deducated amount
                                                     deductedAmount.current = null;
                                                 }
                                             }}>

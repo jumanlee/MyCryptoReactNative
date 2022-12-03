@@ -37,7 +37,10 @@ const Walletscreen = ({funds, transactions, clearTransac}) => {
                 </View>
 
                 <View style={styles.cell}>
-                    <Text style={styles.boldText}>Available funds: USD {funds}</Text>
+                    <Text style={{fontSize: 16, color: '#800080', fontWeight: 'bold'}}>Available funds: </Text>
+                    <View style={{marginTop: '2%'}}>
+                        <Text style={{fontSize: 22, fontWeight: 'bold', color: '#696969'}}>USD {funds.toLocaleString("en-US")}</Text>
+                    </View>
 
                         <View style={styles.popupButtonContainer}>
                             <TouchableOpacity style={styles.popupButton} onPress={() => {setDisplays({...displays, options: {

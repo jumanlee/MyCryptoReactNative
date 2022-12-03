@@ -33,7 +33,8 @@ export const transacReducer = (state = initialState, action) => {
 
                 //construct date
                 let day = new Date().getDate().toString();
-                let month = new Date().getMonth().toString();
+                let month = new Date().getMonth() + 1;
+                month = month.toString();
                 let year = new Date().getFullYear().toString();
         
                 let date = day+"/"+month+"/"+year;
@@ -92,7 +93,7 @@ export const portfolioReducer = (state = initialState, action) => {
 
             }else
             {
-                newAssetList[action.name] = {
+                newAssetList[String(action.name)] = {
                     marketPrice: parseFloat(action.marketPrice),
                     quantity: Number(action.quantity),
                     invested: parseFloat(action.invested),

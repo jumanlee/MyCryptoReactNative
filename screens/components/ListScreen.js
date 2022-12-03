@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import styles from '../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -22,7 +22,10 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
     const [name, setName] = useState('');
     const [mainList, setMainList] = useState([]);
     const [apiData, setApiData] = useState(null);
-    const [lastRefreshed, setLastRefreshed] = useState(null);
+    // const [lastRefreshed, setLastRefreshed] = useState(null);
+    const [render, setRender] = useState(false);
+
+    const lastRefreshed = useRef(null);
 
     //popup window states
     const popupName = useRef(null);
@@ -67,15 +70,30 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
     //component to remove data from the list and async storage
     const removeData = async (currency) => {
         for(let i = mainList.length - 1; i >= 0; i--){
-            if(mainList[i].Currency == currency){
+            if(mainList[i].Currency == currency)
+            {
                 //ensure that user is not deleting a currency that they still own
-                if(assetList.hasOwnProperty(mainList[i].Fullname)){
-                    Alert.alert("You can't untrack a currency that you still own. To delete, make sure you've sold off the currency.");
-                }else{
+                if(assetList.hasOwnProperty(mainList[i].Fullname))
+                {
+                    if(assetList[mainList[i].Fullname]["quantity"] > 0){
+                        Alert.alert("You can't untrack a currency that you still own. To delete, make sure you've sold off the currency.");
+                    }
+                    else
+                    {
+                        //proceed to remove said crypto
+                        AsyncStorage.removeItem(currency, (err) => console.log('removed data!', err));
+                        //remove the i'th data from mainList
+                        setMainList((mainList) => mainList.filter((_, index) => index !== i));
+                    }
+                }
+                else
+                {
+                    //proceed to remove said crypto
                     AsyncStorage.removeItem(currency, (err) => console.log('removed data!', err));
                     //remove the i'th data from mainList
                     setMainList((mainList) => mainList.filter((_, index) => index !== i));
                 }
+
                 break;
             }
         }
@@ -103,6 +121,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
         // Free demo API link. This is a free link and nly displays the free available data that doesn't require an API key:
         // 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo'
 
+
        fetch('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo', {
 
             method: "GET",
@@ -127,7 +146,10 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
 
             let currencyFullName = String(json["Meta Data"]["3. Digital Currency Name"]);
 
-            setLastRefreshed(json["Meta Data"]["6. Last Refreshed"]);
+            //set the date for last refreshed
+            lastRefreshed.current = json["Meta Data"]["6. Last Refreshed"];
+
+            // setLastRefreshed(json["Meta Data"]["6. Last Refreshed"]);
 
             setApiData({
                     "Currency": currency, 
@@ -147,15 +169,67 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
     }
 
     //initial render, only runs once
-    useEffect(() => {
+    // useEffect(() => {
 
-        //reset the mainList
-        setMainList([]);
+    //     //reset the mainList
+    //     setMainList([]);
 
-        //get any data that was previously stored in AsyncStorage. 
-        getData();
+    //     //get any data that was previously stored in AsyncStorage. 
+    //     getData();
 
-    }, [])
+    // }, [])
+
+
+    useFocusEffect( useCallback(() => {
+
+        console.log("useFocusEffect rendered");
+
+        let day = new Date().getDate().toString();
+        let month = (new Date().getMonth() + 1).toString();
+        let year = new Date().getFullYear().toString();
+
+        //this is so that it matches the lastRefreshed date format from the API
+        if(day.length < 2){
+            day = "0"+day;
+        }
+
+        //this is so that it matches the lastRefreshed date format from the API
+        if(month.length < 2){
+            month = "0"+month;
+        }
+
+        let todayDate = year+"-"+month+"-"+day;
+
+        console.log(todayDate);
+        console.log(lastRefreshed.current);
+
+        if(lastRefreshed.current != null){
+
+           let isSameDate = lastRefreshed.current.includes(todayDate);
+
+           console.log(isSameDate);
+
+            if(!isSameDate){
+
+                console.log("!samedate render")
+                //reset the mainList
+                setMainList([]);
+
+                //get any data that was previously stored in AsyncStorage. 
+                getData();
+            }
+        }
+        else{
+
+            console.log("else render");
+            //reset the mainList
+            setMainList([]);
+
+            //get any data that was previously stored in AsyncStorage. 
+            getData();
+        }
+        
+    }, []))
 
     // this useEffect watches "apiData" to see if there is any change. If so, this will update mainList
     useEffect(() => { 
@@ -192,19 +266,18 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
 
     }, [mainList])
 
-
     //generate the list of cryptocurrencies and return below
-    const generateList = renderList(mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData);
+    const generateList = renderList(mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData, assetList);
 
     if(mainList.length != 0)
     {
         return(
             <SafeAreaView style={styles.container}>
-
-              {/* popup window component. Passing down all the neccessary props */}
-              <Popup displays={displays} popupJson={popupJson} popupDates={popupDates} popupName={popupName} popupPrice={popupPrice} setDisplays={setDisplays} navigation={navigation}/>
-
               <ScrollView style={{height:"100%"}}> 
+
+                {/* popup window component. Passing down all the neccessary props */}
+                <Popup displays={displays} popupJson={popupJson} popupDates={popupDates} popupName={popupName} popupPrice={popupPrice} setDisplays={setDisplays} navigation={navigation}/>
+
                 <View style={styles.inputField}>
                     <Ionicons name='add' size={20} />
                     <TextInput style = {{width: '100%'}} placeholder="  Add crypto ticker (e.g. BTC)" returnKeyType="send" onSubmitEditing={value => getAPI(value.nativeEvent.text)}/>
@@ -219,7 +292,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
                     </TouchableOpacity>
                 </View>
                 <View>
-                        <Text style={styles.lastRefreshed}>Last refreshed: {lastRefreshed}</Text>
+                        <Text style={styles.lastRefreshed}>Last refreshed: {lastRefreshed.current}</Text>
 
                         {/* function to generate the list of cryptocurrency items */}
                         {generateList}
@@ -261,9 +334,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-
         updateAssetPrice: (_mainList) => dispatch(updateAssetPrice(_mainList)),
-
     }
 }
 

@@ -11,11 +11,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-
-
+//bug associated with tethering (now resolved! But good to note): The first time when a crypto is added onto the list and the user buys it, then immediately proceeds to delete it, the item gets deleted, which is not supposed to be the case, cuz the system should be prohibiting it as the user still owns the said crypto. The reason this is happening is cuz useMemo was only used to track mainList. Bear in mind that removeData function is passed down from parent. When the user buys a newly added crypto, that alters mainList, which then updates the function in useMemo, but then it updates the redux state of assetList, as a result the parent's assetList gets updated, but when it gets to the child (renderList component), because useMemo only tracked changes from mainList, the update from assetList is ignored, as it's not changes in mainList, that's why the passed down removeData that contains "assetList", which is not updated. To solve for that, I asked for useMemo to track assetList too. 
 
 //component to render the list of items
-const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData) => useMemo(() => {
+const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, displays, setDisplays, removeData, assetList) => useMemo(() => {
 
     console.log("render within useMemo");
     //useMemo is used to prevent unnessary renders if the mainlist state remains the same. 
@@ -48,7 +47,7 @@ const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, disp
                     },
                 })}}>
                     <Text style={styles.boldText}>{`Currency: ${object.Fullname} (${object.Currency})`}</Text>
-                    <Text>{`Latest price: USD ${object["Today"]}`}</Text>
+                    <Text>{`Latest price: USD ${parseFloat(object["Today"]).toLocaleString("en-US")}`}</Text>
 
                     {/* display price movement information. This is conditional. If price movement is positive, then a green up arrow is displayed, otherwise, a red down arrow is displayed.  */}
                     {object.Movement > 0 
@@ -71,7 +70,7 @@ const renderList = (mainList, popupName, popupJson, popupDates, popupPrice, disp
         )
     }))
 
-}, [mainList])
+}, [mainList, assetList])
 
 
 export default renderList;

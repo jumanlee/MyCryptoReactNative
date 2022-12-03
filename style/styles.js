@@ -126,7 +126,7 @@ const styles=StyleSheet.create({
         paddingBottom: '8%',
         width: '80%', 
         backgroundColor: 'rgba(255,255,255,0.8)',
-        marginTop: '50%',
+        marginTop: '38%',
         marginBottom: '40%',
         marginLeft: '10%',
         marginRight: '10%',
@@ -156,7 +156,7 @@ const styles=StyleSheet.create({
       popupButtonContainer:{
           flexDirection: 'row',
           justifyContent: 'space-around',
-          marginTop: '18%',
+          marginTop: '10%',
       },
 
       popupButton: {
@@ -221,7 +221,6 @@ const styles=StyleSheet.create({
         flex: 1,
         height: '100%',
         marginTop: '3%',
-
       },
 
       reset: {
