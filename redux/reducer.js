@@ -1,12 +1,14 @@
 //actions is an object
 import {WALLET_DEDUCTED, WALLET_ADDED, TRANSAC_ADDED, TRANSAC_CLEARED, ASSET_ADDED, ASSET_SOLD, ASSET_PRICE_UPDATED} from './actionTypes';
 
+//default states
 export const initialState = {
     funds: 0,
     transactions: [],
     assetList: {},
 }
 
+//reducer for wallet actions
 export const walletReducer = (state = initialState, action) => {
     switch(action.type){
         case WALLET_DEDUCTED: return {
@@ -24,6 +26,7 @@ export const walletReducer = (state = initialState, action) => {
     }
 }
 
+//reducer for transaction actions
 export const transacReducer = (state = initialState, action) => {
 
     switch(action.type){

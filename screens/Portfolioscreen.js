@@ -8,84 +8,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {mergeSort} from './components/algo.js';
+
 import { addWallet, deductWallet, reset, addTransac, transactions, assetList } from '../redux/actions';
 import { connect } from 'react-redux'
 import styles from '../style/styles';
 
-
 const Portfolioscreen = ({funds, reset, transactions, assetList}) => {
-
-    //merges two sorted arrays to produce a third sorted array
-function merge(array1, array2) 
-{
-    var m = array1.length;
-    var n = array2.length;
-    var s = []; 
-
-    var i = 0;
-    var j = 0;
-    var k = 0; 
-
-    while((i < m) && (j<n))
-    {
-        if(array1[i][5] > array2[j][5])
-        {
-            s[k] = array1[i];
-            i = i + 1;
-        }
-        else
-        {
-            s[k] = array2[j];
-            j = j + 1;
-        }
-
-        k = k + 1;
-    }
-
-    while(i < m)
-    {
-        s[k] = array1[i];
-        i = i + 1;
-        k = k + 1;
-    }
-
-    while(j < n)
-    {
-        s[k] = array2[j];
-        j = j +1;
-        k = k + 1;
-    }
-
-    return s;
-}
-
-//recursively does merge sort
-function mergeSort(array) 
-{
-
-    var n = array.length;
-
-    //base cases are when array only has one element or empty.
-    if(n == 1 || n == 0)
-    {
-        return array; 
-    }
-
-    var m = Math.floor((n+1)/2);
-    var L = [];
-    var R = [];
-
-    for(var i = 0; i < m; i++)
-    {
-        L.push(array[i]); 
-    }
-    for(var i = m; i < n; i++)
-    {
-        R.push(array[i]); 
-    }
-
-    return merge(mergeSort(L), mergeSort(R));
-}
 
     let arrayAssetList = [];
     let totalMarketValue = 0;

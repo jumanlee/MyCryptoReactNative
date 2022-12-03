@@ -9,7 +9,7 @@ import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {recommendAlgo, calculateMovement} from './listscreen-components/algo';
+import {recommendAlgo, calculateMovement, todayDateGenerate} from './algo';
 import Popup from './listscreen-components/Popup';
 import renderList from './listscreen-components/renderList';
 import { updateAssetPrice, assetList } from '../../redux/actions';
@@ -122,7 +122,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
         // 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo'
 
 
-       fetch('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo', {
+       fetch(`https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=CNY&apikey=282FMJHWV610CAN8`, {
 
             method: "GET",
             headers: {
@@ -184,22 +184,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
 
         console.log("useFocusEffect rendered");
 
-        let day = new Date().getDate().toString();
-        let month = (new Date().getMonth() + 1).toString();
-        let year = new Date().getFullYear().toString();
-
-        //this is so that it matches the lastRefreshed date format from the API
-        if(day.length < 2){
-            day = "0"+day;
-        }
-
-        //this is so that it matches the lastRefreshed date format from the API
-        if(month.length < 2){
-            month = "0"+month;
-        }
-
-        let todayDate = year+"-"+month+"-"+day;
-
+        let todayDate = todayDateGenerate();
         console.log(todayDate);
         console.log(lastRefreshed.current);
 
