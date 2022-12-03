@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
-import styles from '../../style/styles';
+import styles from '../../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import AsyncStorage from '@react-native-async-storage/async-storage';

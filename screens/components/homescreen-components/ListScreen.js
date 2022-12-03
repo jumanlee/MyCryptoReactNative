@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import styles from '../../style/styles';
+import styles from '../../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
 import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,10 +9,10 @@ import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {recommendAlgo, calculateMovement, todayDateGenerate} from './algo';
-import Popup from './listscreen-components/Popup';
-import renderList from './listscreen-components/renderList';
-import { updateAssetPrice, assetList } from '../../redux/actions';
+import {recommendAlgo, calculateMovement, todayDateGenerate} from '../algo';
+import Popup from './Popup';
+import renderList from './renderList';
+import { updateAssetPrice, assetList } from '../../../redux/actions';
 import { connect } from 'react-redux';
 
 
