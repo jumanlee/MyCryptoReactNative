@@ -1,10 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView } from 'react-native';
-import 'react-native-gesture-handler';
+
+import { StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import {Ionicons} from '@expo/vector-icons';
 import HomeScreenApp from './Homescreen';
 import NewsScreenApp from './Newsscreen';

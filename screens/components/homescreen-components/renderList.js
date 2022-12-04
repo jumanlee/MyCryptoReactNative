@@ -1,15 +1,9 @@
-
 import React from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useMemo } from 'react';
+import {Text, View, TouchableOpacity} from 'react-native';
 import styles from '../../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 //bug associated with tethering (now resolved! But good to note): The first time when a crypto is added onto the list and the user buys it, then immediately proceeds to delete it, the item gets deleted, which is not supposed to be the case, cuz the system should be prohibiting it as the user still owns the said crypto. The reason this is happening is cuz useMemo was only used to track mainList. Bear in mind that removeData function is passed down from parent. When the user buys a newly added crypto, that alters mainList, which then updates the function in useMemo, but then it updates the redux state of assetList, as a result the parent's assetList gets updated, but when it gets to the child (renderList component), because useMemo only tracked changes from mainList, the update from assetList is ignored, as it's not changes in mainList, that's why the passed down removeData that contains "assetList", which is not updated. To solve for that, I asked for useMemo to track assetList too. 
 

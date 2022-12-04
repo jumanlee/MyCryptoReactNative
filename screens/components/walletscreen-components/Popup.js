@@ -1,14 +1,7 @@
 import React from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {useRef} from 'react';
+import { Text, View, TextInput, TouchableOpacity, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import styles from '../../../style/styles';
-import {Ionicons} from '@expo/vector-icons';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { deductWallet, addWallet, addTransac, transactions } from '../../../redux/actions';
 import { connect } from 'react-redux';
 

@@ -1,14 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert } from 'react-native';
-import styles from '../style/styles';
-import {Ionicons} from '@expo/vector-icons';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ListScreen from './components/homescreen-components/ListScreen';
 import DetailScreen from './components/homescreen-components/DetailScreen';
 

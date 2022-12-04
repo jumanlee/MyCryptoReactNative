@@ -1,20 +1,11 @@
 import React from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import {Ionicons} from '@expo/vector-icons';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {mergeSort} from './components/algo.js';
-
-import { addWallet, deductWallet, reset, addTransac, transactions, assetList } from '../redux/actions';
+import { Text, View, SafeAreaView, ScrollView, TouchableOpacity} from 'react-native';
+import { mergeSort } from './components/algo.js';
+import { addWallet, deductWallet, reset, addTransac, assetList } from '../redux/actions';
 import { connect } from 'react-redux'
 import styles from '../style/styles';
 
-const Portfolioscreen = ({funds, reset, transactions, assetList}) => {
+const Portfolioscreen = ({reset, assetList}) => {
 
     let arrayAssetList = [];
     let totalMarketValue = 0;
@@ -132,8 +123,6 @@ const Portfolioscreen = ({funds, reset, transactions, assetList}) => {
 const mapStateToProps = state => {
 
  return {
-    //  funds: state.wallet.funds,
-    //  transactions: state.transac.transactions,
         assetList: state.portfolio.assetList
  }
 }

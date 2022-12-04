@@ -1,14 +1,10 @@
 import React, { useCallback } from 'react';
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Linking, Alert, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useState, useEffect, useRef} from 'react';
+import { Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import styles from '../../../style/styles';
 import {Ionicons} from '@expo/vector-icons';
-import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useFocusEffect } from '@react-navigation/native';
 import {recommendAlgo, calculateMovement, todayDateGenerate} from '../algo';
 import Popup from './Popup';
 import renderList from './renderList';
@@ -57,6 +53,8 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
 
                 //be sure to ignore redux persist in Async Storage
                 if(result[i][0] != "persist:root"){
+
+                    console.log(result[i][0]);
                     //get the result
                     getAPI(result[i][0]);
                 }
@@ -122,7 +120,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
         // 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo'
 
 
-       fetch(`https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=CNY&apikey=282FMJHWV610CAN8`, {
+       fetch('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo', {
 
             method: "GET",
             headers: {
