@@ -120,7 +120,7 @@ const ListScreen = ({navigation, updateAssetPrice, assetList}) => {
         // 'https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo'
 
 
-       fetch('https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=CNY&apikey=demo', {
+       fetch(`https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=CNY&apikey=282FMJHWV610CAN8`, {
 
             method: "GET",
             headers: {
